@@ -36,6 +36,17 @@ final readonly class DistanceBreakdown
         }
 
         $numberOfBreakdowns = 11;
+        if ($longestDistanceForActivity->toFloat() < 5) {
+                $scaleForBreakdowns = 1; 
+        } elseif ($longestDistanceForActivity->toFloat() < 10) { 
+                $scaleForBreakdowns = 2; 
+        } elseif ($longestDistanceForActivity->toFloat() < 15) {
+                $scaleForBreakdowns = 3; 
+        } elseif ($longestDistanceForActivity->toFloat() < 20) {
+                $scaleForBreakdowns = 4; 
+        } else {
+                $scaleForBreakdowns = 5; 
+        }
         $statistics = [];
         $longestDistanceForActivity = Kilometer::from($this->activities->max(
             fn (Activity $activity) => $activity->getDistance()->toFloat()
@@ -45,7 +56,7 @@ final readonly class DistanceBreakdown
             return [];
         }
 
-        $breakdownOnDistance = ceil(($longestDistanceForActivity->toFloat() / $numberOfBreakdowns) / 5) * 5;
+        $breakdownOnDistance = ceil(($longestDistanceForActivity->toFloat() / $numberOfBreakdowns) / $scaleForBreakdowns) * $scaleForBreakdowns;
 
         $range = range($breakdownOnDistance, ceil($longestDistanceForActivity->toFloat() / $breakdownOnDistance) * $breakdownOnDistance, $breakdownOnDistance);
         foreach ($range as $breakdownLimit) {
